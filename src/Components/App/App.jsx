@@ -5,7 +5,7 @@ import './App.css';
 function App() {
     return (
         <div className="App">
-            <h1> Shit removed!! </h1>
+            <h1> Shit added!! </h1>
             <Card title="popOS"/>
         </div>
     );
