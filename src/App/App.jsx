@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from '../Card/Card.jsx';
+import Card from '../Components/Card/Card.jsx';
 import './App.css';
 
 function App() {
