@@ -1,12 +1,12 @@
 import React from 'react';
-import Card from '../Components/Card/Card.jsx';
-import './App.css';
+import CourseCard from '../Components/Course-Card/course-card.component.jsx';
+import './app.scss';
 
 function App() {
     return (
         <div className="App">
             <h1> Shit added!! </h1>
-            <Card title="popOS"/>
+            <CourseCard title="popOS"/>
         </div>
     );
 }
