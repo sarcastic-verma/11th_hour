@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {handleUpload} from "../../controllers/course-controller";
+import {connect} from "react-redux";
 
 
 class Upload extends Component {
@@ -7,8 +8,6 @@ class Upload extends Component {
         super(props);
         this.state = {
             image: null,
-            url: "",
-            progress: 0
         };
     }
 
@@ -27,7 +26,7 @@ class Upload extends Component {
                 <br/>
                 <br/>
                 <div className="row">
-                    <progress value={this.state.progress} max="100" className="progress"/>
+                    <progress value={this.props.progress} max="100" className="progress"/>
                 </div>
                 <br/>
                 <br/>
@@ -42,8 +41,8 @@ class Upload extends Component {
                     </div>
                 </div>
                 <button
-                    onClick={() => {
-                        handleUpload(this.state.image)
+                    onClick={async () => {
+                        await handleUpload(this.state.image)
                     }}
                     className="waves-effect waves-light btn"
                 >
@@ -52,7 +51,7 @@ class Upload extends Component {
                 <br/>
                 <br/>
                 <img
-                    src={this.state.url || "https://via.placeholder.com/400x300"}
+                    src={this.props.url || "https://via.placeholder.com/400x300"}
                     alt="Uploaded Images"
                     height="300"
                     width="400"
@@ -62,4 +61,9 @@ class Upload extends Component {
     }
 }
 
-export default Upload;
+const mapStateToProps = state => ({
+    progress: state.upload.progress,
+    url :state.upload.url
+});
+
+export default connect(mapStateToProps)(Upload);
