@@ -6,24 +6,27 @@ export const handleUpload = (image) => {
         "state_changed",
         snapshot => {
             // progress function ...
-            const progress = Math.round(
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            );
-            this.setState({progress});
+            // const progress = Math.round(
+            //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            // );
+            // this.setState({progress});
         },
         error => {
             // Error function ...
             console.log(error);
         },
-        () => {
+        async () => {
             // complete function ...
-            storage
-                .ref("courses")
-                .child(image.name)
-                .getDownloadURL()
-                .then(url => {
-                    this.setState({url});
-                });
+            const url = await storage.ref("test").child(image.name).getDownloadURL();
+            // storage
+            //     .ref("courses")
+            //     .child(image.name)
+            //     .getDownloadURL()
+            //     .then(url => {
+            //         this.setState({url});
+            //     });
+
+            console.log("DONe");
         }
     );
 };

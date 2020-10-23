@@ -1,7 +1,7 @@
 import React from 'react';
 import CourseCard from '../Components/Course-Card/course-card.component.jsx';
 import './app.scss';
-import Upload from "../Components/Upload-Component/upload-component.component";
+import Upload from "../Components/Upload/upload.component";
 
 function App() {
     return (

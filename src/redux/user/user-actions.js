@@ -1,4 +1,6 @@
+import UserTypes from "./user-types";
+
 export const setSomeUserShit = user => ({
-    type: "SET_SOME_USER_SHIT",
+    type: UserTypes.SET_SOME_USER_SHIT,
     payload: user
 })
