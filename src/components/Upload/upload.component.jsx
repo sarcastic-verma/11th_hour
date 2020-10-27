@@ -1,22 +1,43 @@
 import React, {Component} from "react";
-import {handleUpload} from "../../controllers/course-controller";
-import {connect} from "react-redux";
-
+import {onFileChange, onUploadSubmission} from "../../controllers/course-controller";
 
 class Upload extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            image: null,
+            files: [],
+            progress: 0,
+            url: null
         };
     }
 
-    handleChange = e => {
-        if (e.target.files[0]) {
-            const image = e.target.files[0];
-            this.setState(() => ({image}));
-        }
+    setFile = (newFile) => {
+        this.setState((state) => {
+            return {
+                files: [...state.files, newFile]
+            }
+        });
     };
+
+    setProgress = (progress) => {
+        this.setState((prevState) => ({
+                progress: progress,
+            }
+        ));
+    };
+
+    setUrl = (url) => {
+        this.setState(() => ({url}));
+    };
+
+    onComplete = () => {
+        this.setState((prevState) => (
+            {
+                files: [],
+                progress: 0
+            }
+        ));
+    }
 
     render() {
         return (
@@ -26,44 +47,34 @@ class Upload extends Component {
                 <br/>
                 <br/>
                 <div className="row">
-                    <progress value={this.props.progress} max="100" className="progress"/>
+                    <progress value={this.state.progress} max="100" className="progress"/>
                 </div>
+                <h3>{this.state.progress} %</h3>
                 <br/>
                 <br/>
                 <br/>
                 <div className="file-field input-field">
                     <div className="btn">
                         <span>File</span>
-                        <input type="file" onChange={this.handleChange}/>
-                    </div>
-                    <div className="file-path-wrapper">
-                        <input className="file-path validate" type="text"/>
+                        <br/>
+                        <br/>
+                        <input type="file" multiple onChange={e => onFileChange(e, this.setFile)}/>
                     </div>
                 </div>
+                <br/>
+                <br/>
+                {this.state.files.map((file) => {
+                    return <h1 key={file.id}>{`${file.name} `}</h1>
+                })}
                 <button
-                    onClick={async () => {
-                        await handleUpload(this.state.image)
-                    }}
-                    className="waves-effect waves-light btn"
-                >
+                    onClick={async (e) => {
+                        await onUploadSubmission(e, this.state.files, this.setProgress, this.setUrl, this.onComplete);
+                    }} className="waves-effect waves-light btn">
                     Upload
                 </button>
-                <br/>
-                <br/>
-                <img
-                    src={this.props.url || "https://via.placeholder.com/400x300"}
-                    alt="Uploaded Images"
-                    height="300"
-                    width="400"
-                />
             </div>
         );
     }
 }
 
-const mapStateToProps = state => ({
-    progress: state.upload.progress,
-    url :state.upload.url
-});
-
-export default connect(mapStateToProps)(Upload);
+export default Upload;
