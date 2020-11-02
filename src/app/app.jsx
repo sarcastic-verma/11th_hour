@@ -1,7 +1,7 @@
 import React from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import {Redirect, Route, Switch} from "react-router-dom";
+import {connect} from "react-redux";
+import {createStructuredSelector} from "reselect";
 
 import "./app.scss";
 
@@ -12,17 +12,18 @@ import UploadPage from "../views/upload/upload.view";
 
 import Header from "../components/header/header.component";
 
-import { createUserProfileDocument } from "../controllers/user-controller";
-import { auth } from "../firebase-config/firebase.utils";
+import {createUserProfileDocument} from "../controllers/user-controller";
+import {auth} from "../firebase-config/firebase.utils";
 
-import { setCurrentUser } from "../redux/user/user-actions";
-import { selectCurrentUser } from "../redux/user/user-selectors";
+import {setCurrentUser} from "../redux/user/user-actions";
+import {selectCurrentUser} from "../redux/user/user-selectors";
+import Page404 from "../views/page-404/page-404.views";
 
 class App extends React.Component {
     unsubscribeFromAuth = null;
 
     componentDidMount() {
-        const { setCurrentUser } = this.props;
+        const {setCurrentUser} = this.props;
 
         this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
             if (userAuth) {
@@ -47,22 +48,23 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                <Header />
+                <Header/>
                 <Switch>
-                    <Route exact path="/" component={HomePage} />
-                    <Route exact path="/upload" component={UploadPage} />
-                    <Route exact path="/about" component={AboutPage} />
+                    <Route exact path="/" component={HomePage}/>
+                    <Route exact path="/upload" component={UploadPage}/>
+                    <Route exact path="/about" component={AboutPage}/>
                     <Route
                         exact
                         path="/signin"
                         render={() =>
                             this.props.currentUser ? (
-                                <Redirect to="/" />
+                                <Redirect to="/"/>
                             ) : (
-                                <AuthPage />
+                                <AuthPage/>
                             )
                         }
                     />
+                    <Route component={Page404}/>
                 </Switch>
             </div>
         );
