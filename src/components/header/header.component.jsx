@@ -7,13 +7,15 @@ import {auth} from '../../firebase-config/firebase.utils';
 import CartIcon from '../cart-icon/cart-icon.component';
 import {selectCurrentUser} from '../../redux/user/user-selectors';
 
-// import { ReactComponent as Logo } from '../../../assets/logo.svg';
+import { ReactComponent as Logo } from '../../assets/home-button.svg';
 import './header.styles.scss';
+import Searchbar from'../search-bar/search-bar.component';
 
 const Header = ({ currentUser }) => (
   <div className='header'>
     <Link className='logo-container' to='/'>
-      {/*<Logo className='logo' />*/}
+      <Searchbar/>
+      <Logo className='logo' />
     </Link>
     <div className='options'>
       <Link className='option' to='/upload'>
