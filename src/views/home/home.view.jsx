@@ -2,10 +2,12 @@ import React from 'react';
 import './home.styles.scss';
 import studyillus from "../../assets/studyillus.png";
 import homedesign from "../../assets/home-design.svg";
+import Header from "../../components/header/header.component";
 
   const HomePage = () => {
   return ( 
   <div className='homepage'>
+    <Header/>
       {/*<Directory />*/}
       {/* <Searchbar/> */}
       <h1 className = "title"> 11th Hour </h1>

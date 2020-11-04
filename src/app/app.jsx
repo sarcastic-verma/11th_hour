@@ -10,7 +10,6 @@ import AboutPage from "../views/about/about.view";
 import AuthPage from "../views/auth/auth.view";
 import UploadPage from "../views/upload/upload.view";
 
-import Header from "../components/header/header.component";
 
 import {createUserProfileDocument} from "../controllers/user-controller";
 import {auth} from "../firebase-config/firebase.utils";
@@ -47,8 +46,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div>
-                <Header/>
+            <div>               
                 <Switch>
                     <Route exact path="/" component={HomePage}/>
                     <Route exact path="/upload" component={UploadPage}/>
