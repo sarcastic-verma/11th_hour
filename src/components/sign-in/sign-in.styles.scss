@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
 .sign-in {
   width: 380px;
   display: flex;
   flex-direction: column;
+  font-family: 'Roboto Slab', sans-serif;
 
   .title {
     margin: 10px 0;

@@ -1,9 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
+
 .sign-up {
   display: flex;
   flex-direction: column;
-  width: 380px;
+  width: 300px;
 
   .title {
+    position: relative;
+    left: 0.5rem;
+    top: -20px;
+    font-family: 'Roboto Slab', sans-serif;
     margin: 10px 0;
+    font-size: 25px;
+  }
+  .span{
+    position: relative;
+    bottom: -20px;
+    font-family: 'Roboto Slab', sans-serif;
   }
 }
