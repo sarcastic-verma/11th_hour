@@ -5,38 +5,81 @@ class Upload extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            files: [],
-            progress: 0,
+            videos: [],
+            courseThumbnail: null,
+            resources: [],
+            resourcesProgress: 0,
+            videosProgress: 0,
+            courseThumbnailProgress: 0,
             url: null
         };
     }
 
-    setFile = (newFile) => {
-        this.setState((state) => {
-            return {
-                files: [...state.files, newFile]
-            }
-        });
+    setFiles = (type, newFile) => {
+        type === "videos" ?
+            this.setState((prevState) => (
+                {
+                    videos: [...prevState.videos, newFile]
+                }
+            ))
+            : type === "resources" ?
+            this.setState((prevState) => (
+                {
+                    resources: [...prevState.resources, newFile]
+                }
+            ))
+            : this.setState(() => (
+                {
+                    courseThumbnail: newFile
+                }
+            ));
     };
 
-    setProgress = (progress) => {
-        this.setState((prevState) => ({
-                progress: progress,
-            }
-        ));
+    setProgress = (type, progress) => {
+        type === "videos" ?
+            this.setState(() => (
+                {
+                    videoProgress: progress
+                }
+            ))
+            : type === "resources" ?
+            this.setState(() => (
+                {
+                    resourcesProgress: progress
+                }
+            ))
+            : this.setState(() => (
+                {
+                    courseThumbnailProgress: progress,
+                }
+            ));
     };
 
-    setUrl = (url) => {
+    setUrl = (type, url) => {
         this.setState(() => ({url}));
     };
 
-    onComplete = () => {
-        this.setState((prevState) => (
-            {
-                files: [],
-                progress: 0
-            }
-        ));
+    onComplete = (type) => {
+        type === "videos" ?
+            this.setState(() => (
+                {
+                    videos: [],
+                    videoProgress: 0
+                }
+            ))
+            : type === "resources" ?
+            this.setState(() => (
+                {
+                    resources: [],
+                    resourcesProgress: 0
+                }
+            ))
+            : this.setState(() => (
+                {
+                    courseThumbnail: null,
+                    thumbnailProgress: 0
+                }
+            ));
     }
 
     render() {
@@ -46,29 +89,25 @@ class Upload extends Component {
                 <h2 className="green-text">Upload Course Content</h2>
                 <br/>
                 <br/>
+                <h3>Videos</h3>
                 <div className="row">
-                    <progress value={this.state.progress} max="100" className="progress"/>
+                    <progress value={this.state.videosProgress} max="100" className="progress"/>
                 </div>
-                <h3>{this.state.progress} %</h3>
-                <br/>
-                <br/>
+                <h3>{this.state.videosProgress} %</h3>
                 <br/>
                 <div className="file-field input-field">
                     <div className="btn">
-                        <span>File</span>
-                        <br/>
-                        <br/>
-                        <input type="file" multiple onChange={e => onFileChange(e, this.setFile)}/>
+                        <input type="file" multiple onChange={e => onFileChange(e, this.setFiles)}/>
                     </div>
                 </div>
                 <br/>
                 <br/>
-                {this.state.files.map((file) => {
-                    return <h1 key={file.id}>{`${file.name} `}</h1>
+                {this.state.videos.map((video) => {
+                    return <h1 key={video.id}>{`${video.name} `}</h1>
                 })}
                 <button
                     onClick={async (e) => {
-                        await onUploadSubmission(e, this.state.files, this.setProgress, this.setUrl, this.onComplete);
+                        await onUploadSubmission(e, this.state.videos, this.setProgress, this.setUrl, this.onComplete);
                     }} className="waves-effect waves-light btn">
                     Upload
                 </button>
