@@ -11,50 +11,83 @@ export const onFileChange = (e, setFile) => {
     }
 };
 
-export const onUploadSubmission = (e, files, setProgress, setUrl, onComplete) => {
-    const totalSize = files.reduce(
-        (accumalatedQuantity, file) =>
-            accumalatedQuantity + file.size,
-        0
-    );
-    console.log(totalSize);
-    let inProgressSize = 0;
-    e.preventDefault(); // prevent page refreshing
-    const promises = [];
-    for (let i = 0; i < files.length; i++) {
-        const uploadTask =
-            storage.ref().child(`courses/${files[i].name}`).put(files[i]);
-        promises.push(uploadTask);
+export const onUploadSubmission = (e, files, type, setProgress, setUrl, onComplete) => {
+    let ref = firestore.collection("my_collection").doc();
+    const courseId = ref.id;
+    if (type !== 'course thumbnail') {
+        const totalSize = files.reduce(
+            (accumalatedQuantity, file) =>
+                accumalatedQuantity + file.size,
+            0
+        );
+        console.log(totalSize);
+        let inProgressSize = 0;
+        e.preventDefault(); // prevent page refreshing
+        const promises = [];
+        for (let i = 0; i < files.length; i++) {
+            let uploadTask;
+            type === "lectures" ?
+                uploadTask =
+                    storage.ref().child(`Courses/${courseId}/Lectures/${files[i].name}`).put(files[i]) :
+                uploadTask =
+                    storage.ref().child(`Courses/${courseId}/Resources/${files[i].name}`).put(files[i])
+            promises.push(uploadTask);
+            uploadTask.on(
+                "state_changed",
+                snapshot => {
+                    // progress function ...
+                    // inProgressSize += snapshot.bytesTransferred;
+                    console.log("uploading");
+                },
+                error => {
+                    console.log(error);
+                },
+                async () => {
+                    inProgressSize += files[i].size;
+                    const progress = Math.round(
+                        (inProgressSize / totalSize) * 100
+                    );
+                    setProgress(progress);
+                    let folderName;
+                    type === "lectures" ?
+                        folderName =
+                            "Lectures" :
+                        folderName =
+                            "Resources"
+                    const url = await storage.ref(`Courses/${courseId}/${folderName}/`).child(files[i].name).getDownloadURL();
+                    setUrl(url);
+                    console.log("Done with " + url + "progress is " + inProgressSize);
+                }
+            );
+        }
+        Promise
+            .all(promises)
+            .then(() => {
+                alert('All files uploaded');
+                onComplete();
+            })
+            .catch(err => console.log(err.code));
+    } else {
+        const uploadTask = storage.ref(`Courses/${courseId}/thumbnail.jpeg`).put(files[0]);
         uploadTask.on(
             "state_changed",
             snapshot => {
-                // progress function ...
-                // inProgressSize += snapshot.bytesTransferred;
-
-                console.log("uploading");
+                const progress = Math.round(
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                );
+                setProgress(progress);
+                console.log("uploaded");
             },
             error => {
                 console.log(error);
             },
             async () => {
-                inProgressSize += files[i].size;
-                const progress = Math.round(
-                    (inProgressSize / totalSize) * 100
-                );
-                setProgress(progress);
-                const url = await storage.ref("courses").child(files[i].name).getDownloadURL();
-                setUrl(url);
-                console.log("Done with " + url + "progress is " + inProgressSize);
+                const url = await storage.ref(`Courses/${courseId}`).child('thumbnail.jpeg').getDownloadURL();
+                console.log(url);
+                console.log("Done");
             }
         );
     }
-    Promise
-        .all(promises)
-        .then(() => {
-            alert('All files uploaded');
-            onComplete();
-        })
-        .catch(err => console.log(err.code));
 }
 
 export const getCourses = async () => {
