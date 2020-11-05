@@ -14,6 +14,9 @@ class SignUp extends React.Component {
 
         this.state = {
             displayName: '',
+            phone: '',
+            collegeId: '',
+            profilePicURL: '',
             email: '',
             password: '',
             confirmPassword: ''
@@ -23,7 +26,7 @@ class SignUp extends React.Component {
     handleSubmit = async event => {
         event.preventDefault();
 
-        const { displayName, email, password, confirmPassword } = this.state;
+        const {displayName, email, password, confirmPassword, phone, collegeId, profilePicURL} = this.state;
 
         if (password !== confirmPassword) {
             alert("passwords don't match");
@@ -31,15 +34,22 @@ class SignUp extends React.Component {
         }
 
         try {
-            const { user } = await auth.createUserWithEmailAndPassword(
+            const {user} = await auth.createUserWithEmailAndPassword(
                 email,
                 password
             );
 
-            await createUserProfileDocument(user, { displayName });
+            await createUserProfileDocument(user, {
+                displayName, phone,
+                collegeId,
+                profilePicURL
+            });
 
             this.setState({
                 displayName: '',
+                phone: '',
+                collegeId: '',
+                profilePicURL: '',
                 email: '',
                 password: '',
                 confirmPassword: ''
@@ -50,18 +60,34 @@ class SignUp extends React.Component {
     };
 
     handleChange = event => {
-        const { name, value } = event.target;
+        const {name, value} = event.target;
 
-        this.setState({ [name]: value });
+        this.setState({[name]: value});
     };
 
     render() {
-        const { displayName, email, password, confirmPassword } = this.state;
+        const {displayName, email, password, confirmPassword,phone,profilePicURL,collegeId} = this.state;
         return (
             <div className='sign-up'>
                 <h2 className='title'>I do not have a account</h2>
                 <span className = "span">Sign up with your email and password</span>
                 <form className='sign-up-form' onSubmit={this.handleSubmit}>
+                    <FormInput
+                        type='text'
+                        name='displayName'
+                        value={displayName}
+                        onChange={this.handleChange}
+                        label='Display Name'
+                        required
+                    />
+                    <FormInput
+                        type='text'
+                        name='phone'
+                        value={phone}
+                        onChange={this.handleChange}
+                        label='Phone Number'
+                        required
+                    />
                     <FormInput
                         type='text'
                         name='displayName'

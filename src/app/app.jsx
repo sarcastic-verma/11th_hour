@@ -17,6 +17,7 @@ import {auth} from "../firebase-config/firebase.utils";
 import {setCurrentUser} from "../redux/user/user-actions";
 import {selectCurrentUser} from "../redux/user/user-selectors";
 import Page404 from "../views/page-404/page-404.views";
+import ProfilePage from "../views/profile-page/profile-page.view";
 
 class App extends React.Component {
     unsubscribeFromAuth = null;
@@ -46,7 +47,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div>               
+            <div>
                 <Switch>
                     <Route exact path="/" component={HomePage}/>
                     <Route exact path="/upload" component={UploadPage}/>
@@ -57,6 +58,17 @@ class App extends React.Component {
                         render={() =>
                             this.props.currentUser ? (
                                 <Redirect to="/"/>
+                            ) : (
+                                <AuthPage/>
+                            )
+                        }
+                    />
+                    <Route
+                        exact
+                        path="/profile"
+                        render={() =>
+                            this.props.currentUser ? (
+                                <ProfilePage/>
                             ) : (
                                 <AuthPage/>
                             )
