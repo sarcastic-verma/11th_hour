@@ -1,20 +1,19 @@
-import {firestore, storage} from "../firebase-config/firebase.utils";
+import firebase, {fieldValue, firestore, storage} from "../firebase-config/firebase.utils";
 import Course from "../models/course";
 
 
-export const onFileChange = (e, setFile) => {
+export const onFileChange = (e, title, setFile) => {
     for (let i = 0; i < e.target.files.length; i++) {
         const newFile = e.target.files[i];
         newFile["id"] = i;
         console.log(newFile);
-        setFile(newFile);
+        setFile(title, newFile);
     }
 };
 
-export const onUploadSubmission = (e, files, type, setProgress, setUrl, onComplete) => {
-    let ref = firestore.collection("my_collection").doc();
-    const courseId = ref.id;
+export const onUploadSubmission = async (e, files, type, setProgress, onComplete, courseId) => {
     if (type !== 'course thumbnail') {
+        let details = [];
         const totalSize = files.reduce(
             (accumalatedQuantity, file) =>
                 accumalatedQuantity + file.size,
@@ -37,7 +36,7 @@ export const onUploadSubmission = (e, files, type, setProgress, setUrl, onComple
                 snapshot => {
                     // progress function ...
                     // inProgressSize += snapshot.bytesTransferred;
-                    console.log("uploading");
+                    console.log("ll");
                 },
                 error => {
                     console.log(error);
@@ -53,9 +52,12 @@ export const onUploadSubmission = (e, files, type, setProgress, setUrl, onComple
                         folderName =
                             "Lectures" :
                         folderName =
-                            "Resources"
+                            "Resources";
                     const url = await storage.ref(`Courses/${courseId}/${folderName}/`).child(files[i].name).getDownloadURL();
-                    setUrl(url);
+                    type === "lectures" ?
+                        details.push({lectureUrl: url, name: files[i].name})
+                        :
+                        details.push({resourceUrl: url, name: files[i].name});
                     console.log("Done with " + url + "progress is " + inProgressSize);
                 }
             );
@@ -63,10 +65,10 @@ export const onUploadSubmission = (e, files, type, setProgress, setUrl, onComple
         Promise
             .all(promises)
             .then(() => {
-                alert('All files uploaded');
                 onComplete();
             })
             .catch(err => console.log(err.code));
+        return details;
     } else {
         const uploadTask = storage.ref(`Courses/${courseId}/thumbnail.jpeg`).put(files[0]);
         uploadTask.on(
@@ -76,19 +78,45 @@ export const onUploadSubmission = (e, files, type, setProgress, setUrl, onComple
                     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
                 );
                 setProgress(progress);
-                console.log("uploaded");
             },
             error => {
                 console.log(error);
             },
             async () => {
                 const url = await storage.ref(`Courses/${courseId}`).child('thumbnail.jpeg').getDownloadURL();
-                console.log(url);
-                console.log("Done");
+                console.log(`asa ${url}`);
+                return url;
             }
         );
+
     }
 }
+
+export const addCourseToFirestore = async (lectures, resources, courseThumbnail, title, price, description, subject, courseId, collegeId, instructorId,
+                                           instructorName) => {
+    const date = firebase.firestore.FieldValue.serverTimestamp();
+    await firestore.doc(`courses/${courseId}`).set({
+        lectures,
+        resources,
+        // courseThumbnail,
+        title,
+        price,
+        collegeId,
+        description,
+        subject,
+        date,
+        blackListed: false,
+        enrolledUsers: [],
+        instructorId,
+        instructorName,
+        ratings: [],
+    });
+
+    await firestore.doc(`users/${instructorId}`).update({
+        myUploadedCourses: fieldValue.arrayUnion(...[courseId])
+    });
+    alert('All files uploaded');
+};
 
 export const getCourses = async () => {
     let courses = [];
@@ -150,7 +178,7 @@ export const updateCourseRating = async (courseId, newRating, userId, courses) =
 
 export const getTrendingCourses = (courses) => {
     courses.sort((a, b) => {
-        return b.enrolledUsers.length.compareTo(a.enrolledUsers.length);
+        return b.enrolledUsers.length >= a.enrolledUsers.length;
     });
     return courses;
 };
