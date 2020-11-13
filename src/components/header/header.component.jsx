@@ -14,22 +14,26 @@ import Searchbar from '../search-bar/search-bar.component';
 const Header = ({currentUser}) => (
     <div className='header'>
         <Link className='logo-container' to='/'>
-            <Searchbar/>
             <Logo className='logo'/>
         </Link>
+        <Searchbar/>
         <div className='options'>
             {currentUser ? (
                 <Link className='option' to='/profile'>
                     Profile
                 </Link>
             ) : (
-                <div>
-
-                </div>
+                <div/>
             )}
-            <Link className='option' to='/upload'>
-                Uploads
-            </Link>
+            {currentUser ? (
+                <Link className='option' to='/upload'>
+                    Uploads
+                </Link>
+            ) : (
+                <div/>
+
+            )}
+
             <Link className='option' to='/about'>
                 About
             </Link>
