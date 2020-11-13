@@ -50,7 +50,13 @@ class App extends React.Component {
             <div>
                 <Switch>
                     <Route exact path="/" component={HomePage}/>
-                    <Route exact path="/upload" component={UploadPage}/>
+                    <Route exact path="/upload" render={() =>
+                        this.props.currentUser ? (
+                            <UploadPage/>
+                        ) : (
+                            <AuthPage/>
+                        )
+                    }/>
                     <Route exact path="/about" component={AboutPage}/>
                     <Route
                         exact
