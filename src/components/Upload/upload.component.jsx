@@ -1,19 +1,184 @@
-import React from "react";
+import React, {Component} from "react";
 import UploadSection from "../upload-section/upload-section.component";
+import FormInput from "../form-input/form-input.component";
+import {addCourseToFirestore, onUploadSubmission} from "../../controllers/course-controller";
+import {firestore} from "../../firebase-config/firebase.utils";
+import {connect} from "react-redux";
+import {createStructuredSelector} from "reselect";
+import {selectCollegeId, selectInstructorId, selectInstructorName} from "../../redux/user/user-selectors";
 
-const Upload = () => {
-    return (
-        <div className="center">
+class Upload extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            lectures: [],
+            courseThumbnail: [],
+            resources: [],
+            resourcesProgress: 0,
+            lecturesProgress: 0,
+            price: '',
+            description: '',
+            title: '',
+            subject: '',
+            courseThumbnailProgress: 0,
+            url: null
+        };
+    }
+
+    setFiles = (type, newFile) => {
+        type === "lectures" ?
+            this.setState((prevState) => (
+                {
+                    lectures: [...prevState.lectures, newFile]
+                }
+            ))
+            : type === "resources" ?
+            this.setState((prevState) => (
+                {
+                    resources: [...prevState.resources, newFile]
+                }
+            ))
+            : this.setState(() => (
+                {
+                    courseThumbnail: [newFile]
+                }
+            ));
+    };
+
+    setProgress = (progress) => {
+        const type = this.props.title;
+        type === "lectures" ?
+            this.setState(() => (
+                {
+                    lectureProgress: progress
+                }
+            ))
+            : type === "resources" ?
+            this.setState(() => (
+                {
+                    resourcesProgress: progress
+                }
+            ))
+            : this.setState(() => (
+                {
+                    courseThumbnailProgress: progress,
+                }
+            ));
+    };
+
+    onComplete = () => {
+        const type = this.props.title;
+        type === "lectures" ?
+            this.setState(() => (
+                {
+                    lectures: [],
+                    lecturesProgress: 0
+                }
+            ))
+            : type === "resources" ?
+            this.setState(() => (
+                {
+                    resources: [],
+                    resourcesProgress: 0
+                }
+            ))
+            : this.setState(() => (
+                {
+                    courseThumbnail: [],
+                    thumbnailProgress: 0
+                }
+            ));
+    }
+
+    render() {
+        const {price, title, description, subject} = this.state;
+        const {collegeId, instructorId, instructorName} = this.props;
+        return <div className="center">
+            <FormInput
+                type='number'
+                name='price'
+                value={price}
+                onChange={(e) => {
+                    e.persist();
+
+                    this.setState(() => (
+                        {
+                            price: e.target.value
+                        }
+                    ));
+                }}
+                label='Price'
+                required
+            />
+            <FormInput
+                type='text'
+                name='title'
+                value={title}
+                onChange={(e) => {
+                    e.persist();
+                    this.setState(() => (
+                        {
+                            title: e.target.value
+                        }
+                    ));
+                }}
+                label='Title'
+                required
+            /><FormInput
+            type='text'
+            name='description'
+            value={description}
+            onChange={(e) => {
+                e.persist();
+
+                this.setState(() => (
+                    {
+                        description: e.target.value
+                    }
+                ));
+            }}
+            label='Description'
+            required
+        />
             <br/>
             <h2 className="green-text">Upload Course Content</h2>
             <br/>
-            <UploadSection title={"lectures"}/>
+            <UploadSection title={"lectures"} progress={this.state.lecturesProgress} displayables={this.state.lectures}
+                           setFiles={this.setFiles}/>
             <br/>
-            <UploadSection title={"resources"}/>
+            <UploadSection title={"resources"} progress={this.state.resourcesProgress}
+                           displayables={this.state.resources} setFiles={this.setFiles}/>
             <br/>
-            <UploadSection title={"course thumbnail"}/>
+            <UploadSection title={"course thumbnail"} progress={this.state.courseThumbnailProgress}
+                           displayables={this.state.courseThumbnail} setFiles={this.setFiles}/>
+            <button
+                onClick={async (e) => {
+                    e.preventDefault();
+                    let ref = firestore.collection("courses").doc();
+                    const courseId = ref.id;
+
+                    const lectureDetails = await onUploadSubmission(e, this.state.lectures, 'lectures', this.setProgress, this.onComplete, courseId);
+
+                    const resourceDetails = await onUploadSubmission(e, this.state.resources, 'resources', this.setProgress, this.onComplete, courseId);
+
+                    const courseThumbnail = await onUploadSubmission(e, this.state.courseThumbnail, 'course thumbnail', this.setProgress, this.onComplete, courseId);
+
+                    await addCourseToFirestore(lectureDetails, resourceDetails, courseThumbnail, title, price, description, subject, courseId, "zEBi3kne0cKzB1s2bIYD", 'yOrZbQQSeaacEc36IRBbC0MLDfS2',
+                        'shivam');
+
+                }} className="waves-effect waves-light btn">
+                Upload
+            </button>
         </div>
-    );
+
+    }
 }
 
-export default Upload;
+const mapStateToProps = createStructuredSelector({
+    collegeId: selectCollegeId,
+    instructorName: selectInstructorName,
+    instructorId: selectInstructorId,
+});
+
+export default connect(mapStateToProps)(Upload);
