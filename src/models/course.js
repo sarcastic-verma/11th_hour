@@ -49,7 +49,6 @@ export default class Course {
             snapshot['collegeId'],
             snapshot['enrolledUsers'],
             snapshot['description']
-        )
-            ;
+        );
     }
 }

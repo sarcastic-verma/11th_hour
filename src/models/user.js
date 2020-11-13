@@ -24,4 +24,21 @@ export default class User {
         this.myUploadedCourses = myUploadedCourses;
         this.wishlist = wishlist;
     }
+
+    static fromDocumentSnapshot(snapshot) {
+        return new User(
+            snapshot['name'],
+            snapshot['email'],
+            snapshot['profilePicURL'],
+            snapshot['phone'],
+            snapshot['collegeId'],
+            snapshot.documentId,
+            snapshot['transactionIds'],
+            snapshot['cart'],
+            snapshot['recentCoursesIds'],
+            snapshot['myCourses'],
+            snapshot['myUploadedCourses'],
+            snapshot['wishlist']
+        );
+    }
 }
