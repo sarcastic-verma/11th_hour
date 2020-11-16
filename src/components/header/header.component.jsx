@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 
 import {auth} from '../../firebase-config/firebase.utils';
-import CartIcon from '../cart-icon/cart-icon.component';
 import {selectCurrentUser} from '../../redux/user/user-selectors';
 
 import {ReactComponent as Logo} from '../../assets/home-button.svg';
@@ -19,24 +18,13 @@ const Header = ({currentUser}) => (
         <Searchbar/>
         <div className='options'>
             {currentUser ? (
-                <Link className='option' to='/profile'>
-                    Profile
-                </Link>
-            ) : (
-                <div/>
-            )}
-            {currentUser ? (
                 <Link className='option' to='/upload'>
-                    Uploads
+                    Upload Course
                 </Link>
             ) : (
                 <div/>
 
             )}
-
-            <Link className='option' to='/about'>
-                About
-            </Link>
             {currentUser ? (
                 <div className='option' onClick={() => auth.signOut()}>
                     Sign Out
@@ -46,7 +34,6 @@ const Header = ({currentUser}) => (
                     Sign In
                 </Link>
             )}
-            <CartIcon/>
         </div>
     </div>
 );
