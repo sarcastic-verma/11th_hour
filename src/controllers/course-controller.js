@@ -11,111 +11,135 @@ export const onFileChange = (e, title, setFile) => {
     }
 };
 
-export const onUploadSubmission = async (e, files, type, setProgress, onComplete, courseId) => {
-    if (type !== 'course thumbnail') {
-        let details = [];
-        const totalSize = files.reduce(
-            (accumalatedQuantity, file) =>
-                accumalatedQuantity + file.size,
-            0
-        );
-        console.log(totalSize);
-        let inProgressSize = 0;
-        e.preventDefault(); // prevent page refreshing
-        const promises = [];
-        for (let i = 0; i < files.length; i++) {
-            let uploadTask;
-            type === "lectures" ?
-                uploadTask =
-                    storage.ref().child(`Courses/${courseId}/Lectures/${files[i].name}`).put(files[i]) :
-                uploadTask =
-                    storage.ref().child(`Courses/${courseId}/Resources/${files[i].name}`).put(files[i])
-            promises.push(uploadTask);
-            uploadTask.on(
-                "state_changed",
-                snapshot => {
-                    // progress function ...
-                    // inProgressSize += snapshot.bytesTransferred;
-                    console.log("ll");
-                },
-                error => {
-                    console.log(error);
-                },
-                async () => {
-                    inProgressSize += files[i].size;
-                    const progress = Math.round(
-                        (inProgressSize / totalSize) * 100
-                    );
-                    setProgress(progress);
-                    let folderName;
-                    type === "lectures" ?
-                        folderName =
-                            "Lectures" :
-                        folderName =
-                            "Resources";
-                    const url = await storage.ref(`Courses/${courseId}/${folderName}/`).child(files[i].name).getDownloadURL();
-                    type === "lectures" ?
-                        details.push({lectureUrl: url, name: files[i].name})
-                        :
-                        details.push({resourceUrl: url, name: files[i].name});
-                    console.log("Done with " + url + "progress is " + inProgressSize);
-                }
-            );
-        }
-        Promise
-            .all(promises)
-            .then(() => {
-                onComplete();
-            })
-            .catch(err => console.log(err.code));
-        return details;
-    } else {
-        const uploadTask = storage.ref(`Courses/${courseId}/thumbnail.jpeg`).put(files[0]);
-        uploadTask.on(
+export const addCourseToFirestore = async (title, price, description, subject, courseId, collegeId, instructorId,
+                                           instructorName, lectureFiles, resourceFiles, courseThumbnailFile, setProgress, onComplete) => {
+    let lectureDetails = [];
+    let resourceDetails = [];
+
+    //lecture section
+    const lecTotalSize = lectureFiles.reduce(
+        (accumalatedQuantity, file) =>
+            accumalatedQuantity + file.size,
+        0
+    );
+    let lecInProgressSize = 0;
+    const lecPromises = [];
+    for (let i = 0; i < lectureFiles.length; i++) {
+        let lecUploadTask =
+            storage.ref().child(`Courses/${courseId}/Lectures/${lectureFiles[i].name}`).put(lectureFiles[i]);
+        lecPromises.push(lecUploadTask);
+        lecUploadTask.on(
             "state_changed",
             snapshot => {
-                const progress = Math.round(
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                );
-                setProgress(progress);
+                // progress function ...
+                // inProgressSize += snapshot.bytesTransferred;
             },
             error => {
                 console.log(error);
             },
             async () => {
-                const url = await storage.ref(`Courses/${courseId}`).child('thumbnail.jpeg').getDownloadURL();
-                console.log(`asa ${url}`);
-                return url;
+                lecInProgressSize += lectureFiles[i].size;
+                const progress = Math.round(
+                    (lecInProgressSize / lecTotalSize) * 100
+                );
+                setProgress("lectures", progress);
+                let folderName = "Lectures";
+                const url = await storage.ref(`Courses/${courseId}/${folderName}/`).child(lectureFiles[i].name).getDownloadURL();
+                lectureDetails.push({lectureUrl: url, name: lectureFiles[i].name});
+                console.log("Done with " + url + "progress is " + lecInProgressSize);
             }
         );
-
     }
-}
+    Promise
+        .all(lecPromises)
+        .then(() => {
+            onComplete('lectures');
+            const resTotalSize = resourceFiles.reduce(
+                (accumalatedQuantity, file) =>
+                    accumalatedQuantity + file.size,
+                0
+            );
+            let resInProgressSize = 0;
+            const resPromises = [];
+            for (let i = 0; i < resourceFiles.length; i++) {
+                let resUploadTask =
+                    storage.ref().child(`Courses/${courseId}/Resources/${resourceFiles[i].name}`).put(resourceFiles[i])
+                resPromises.push(resUploadTask);
+                resUploadTask.on(
+                    "state_changed",
+                    snapshot => {
+                        // progress function ...
+                        // inProgressSize += snapshot.bytesTransferred;
+                    },
+                    error => {
+                        console.log(error);
+                    },
+                    async () => {
+                        resInProgressSize += resourceFiles[i].size;
+                        const progress = Math.round(
+                            (resInProgressSize / resTotalSize) * 100
+                        );
+                        setProgress('resources', progress);
+                        let folderName = "Resources"
+                        const url = await storage.ref(`Courses/${courseId}/${folderName}/`).child(resourceFiles[i].name).getDownloadURL();
+                        resourceDetails.push({resourceUrl: url, name: resourceFiles[i].name});
+                        console.log("Done with " + url + "progress is " + resInProgressSize);
+                    }
+                );
+            }
+            Promise
+                .all(resPromises)
+                .then(() => {
+                    onComplete('resources');
+                    const courseThumbnailUploadTask = storage.ref(`Courses/${courseId}/thumbnail.jpeg`).put(courseThumbnailFile[0]);
+                    courseThumbnailUploadTask.on(
+                        "state_changed",
+                        snapshot => {
+                            const progress = Math.round(
+                                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                            );
+                            setProgress('course thumbnail', progress);
+                        },
+                        error => {
+                            console.log(error);
+                        },
+                        async () => {
+                            const courseThumbnailUrl = await storage.ref(`Courses/${courseId}`).child('thumbnail.jpeg').getDownloadURL();
+                            onComplete('course thumbnail');
+                            console.log(`asa ${courseThumbnailUrl}`);
+                            const date = firebase.firestore.FieldValue.serverTimestamp();
+                            console.log(`lec: ${lectureDetails} ,ct: ${courseThumbnailUrl}`);
+                            await firestore.doc(`courses/${courseId}`).set({
+                                lectureDetails,
+                                resourceDetails,
+                                courseThumbnailUrl,
+                                title,
+                                price,
+                                collegeId,
+                                description,
+                                subject,
+                                date,
+                                blackListed: false,
+                                enrolledUsers: [],
+                                instructorId,
+                                instructorName,
+                                ratings: [],
+                            });
 
-export const addCourseToFirestore = async (lectures, resources, courseThumbnail, title, price, description, subject, courseId, collegeId, instructorId,
-                                           instructorName) => {
-    const date = firebase.firestore.FieldValue.serverTimestamp();
-    await firestore.doc(`courses/${courseId}`).set({
-        lectures,
-        resources,
-        // courseThumbnail,
-        title,
-        price,
-        collegeId,
-        description,
-        subject,
-        date,
-        blackListed: false,
-        enrolledUsers: [],
-        instructorId,
-        instructorName,
-        ratings: [],
-    });
+                            await firestore.doc(`users/${instructorId}`).update({
+                                myUploadedCourses: fieldValue.arrayUnion(...[courseId])
+                            });
+                            await firestore.doc(`colleges/${collegeId}`).update({
+                                ['subjectWithCourses.' + subject]: fieldValue.arrayUnion(...[courseId])
+                            });
+                            alert('All files uploaded');
+                        }
+                    );
+                })
+                .catch(err => console.log(err.code));
+        })
+        .catch(err => console.log(err.code));
 
-    await firestore.doc(`users/${instructorId}`).update({
-        myUploadedCourses: fieldValue.arrayUnion(...[courseId])
-    });
-    alert('All files uploaded');
 };
 
 export const getCourses = async () => {
