@@ -110,9 +110,9 @@ export const addCourseToFirestore = async (title, price, description, subject, c
                             const date = firebase.firestore.FieldValue.serverTimestamp();
                             console.log(`lec: ${lectureDetails} ,ct: ${courseThumbnailUrl}`);
                             await firestore.doc(`courses/${courseId}`).set({
-                                lectureDetails,
-                                resourceDetails,
-                                courseThumbnailUrl,
+                                lectures: lectureDetails,
+                                resources: resourceDetails,
+                                courseThumbnail: courseThumbnailUrl,
                                 title,
                                 price,
                                 collegeId,

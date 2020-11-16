@@ -96,6 +96,7 @@ class Upload extends Component {
                 type='number'
                 name='price'
                 value={price}
+                min={100}
                 onChange={(e) => {
                     e.persist();
 
@@ -168,12 +169,14 @@ class Upload extends Component {
             <button
                 onClick={async (e) => {
                     e.preventDefault();
+                    if (this.state.lectures.length === 0 || this.state.resources.length === 0 || this.state.courseThumbnail.length === 0) {
+                        alert("Please fill all the fields")
+                    } else {
+                        let ref = firestore.collection("courses").doc();
+                        const courseId = ref.id;
 
-                    let ref = firestore.collection("courses").doc();
-                    const courseId = ref.id;
-
-                    await addCourseToFirestore(title, parseInt(price), description, subject, courseId, collegeId, instructorId, instructorName, this.state.lectures, this.state.resources, this.state.courseThumbnail, this.setProgress, this.onComplete,);
-
+                        await addCourseToFirestore(title, parseInt(price), description, subject, courseId, collegeId, instructorId, instructorName, this.state.lectures, this.state.resources, this.state.courseThumbnail, this.setProgress, this.onComplete,);
+                    }
                 }} className="waves-effect waves-light btn">
                 Upload
             </button>
