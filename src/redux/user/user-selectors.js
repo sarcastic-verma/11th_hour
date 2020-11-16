@@ -8,16 +8,16 @@ export const selectCurrentUser = createSelector(
 );
 
 export const selectInstructorName = createSelector(
-    [selectUser],
+    [selectCurrentUser],
     user => user.name,
 );
 
 export const selectInstructorId = createSelector(
-    [selectUser],
-    user => user.userId,
+    [selectCurrentUser],
+    user => user.id,
 );
 
 export const selectCollegeId = createSelector(
-    [selectUser],
+    [selectCurrentUser],
     user => user.collegeId,
 );
