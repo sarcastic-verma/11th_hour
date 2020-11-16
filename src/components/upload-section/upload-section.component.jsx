@@ -10,7 +10,7 @@ export default class UploadSection extends Component {
     render() {
         const {title, progress, displayables, setFiles} = this.props;
         return <div>
-            <h3>Upload {title}</h3>
+            <h1>Upload {title}</h1>
             <div className="row">
                 <progress value={progress} max="100" className="progress"/>
             </div>
@@ -27,7 +27,7 @@ export default class UploadSection extends Component {
             <br/>
             {displayables ?
                 displayables.map((displayable) => {
-                    return <h1 key={displayable.id}>{`${displayable.name} `}</h1>
+                    return <h3 key={displayable.id}>{`${displayable.name} `}</h3>
                 }) : <div/>
             }
         </div>
