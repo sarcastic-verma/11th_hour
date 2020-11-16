@@ -19,11 +19,13 @@ export default class UploadSection extends Component {
             <div className="file-field input-field">
                 <div className="btn">
                     {title !== "course thumbnail" ?
-                        <input type="file" multiple onChange={e => onFileChange(e, title, setFiles)} onClick={() => {
-                            emptyFiles(title);
-                        }
-                        }/> :
-                        <input type="file" onChange={e => onFileChange(e, title, setFiles)}/>}
+                        <input type="file" multiple
+                               onChange={e => onFileChange(e, title, setFiles)} accept ={title === 'lectures'?"video/*":"application/pdf"}
+                               onClick={() => {
+                                   emptyFiles(title);
+                               }
+                               }/> :
+                        <input type="file" onChange={e => onFileChange(e, title, setFiles)} accept="image/*"/>}
                 </div>
             </div>
             <br/>
