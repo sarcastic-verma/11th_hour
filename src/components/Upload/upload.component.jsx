@@ -26,6 +26,25 @@ class Upload extends Component {
         };
     }
 
+    emptyFiles = (type) => {
+        type === "lectures" ?
+            this.setState((prevState) => (
+                {
+                    lectures: []
+                }
+            ))
+            : type === "resources" ?
+            this.setState((prevState) => (
+                {
+                    resources: []
+                }
+            ))
+            : this.setState(() => (
+                {
+                    courseThumbnail: []
+                }
+            ));
+    }
     setFiles = (type, newFile) => {
         type === "lectures" ?
             this.setState((prevState) => (
@@ -143,6 +162,7 @@ class Upload extends Component {
                 type='text'
                 name='description'
                 value={description}
+
                 onChange={(e) => {
                     e.persist();
 
@@ -159,18 +179,21 @@ class Upload extends Component {
             <h2 className="green-text">Upload Course Content</h2>
             <br/>
             <UploadSection title={"lectures"} progress={this.state.lecturesProgress} displayables={this.state.lectures}
-                           setFiles={this.setFiles}/>
+                           setFiles={this.setFiles}
+                           emptyFiles={this.emptyFiles}/>
             <br/>
             <UploadSection title={"resources"} progress={this.state.resourcesProgress}
-                           displayables={this.state.resources} setFiles={this.setFiles}/>
+                           displayables={this.state.resources} setFiles={this.setFiles}
+                           emptyFiles={this.emptyFiles}/>
             <br/>
             <UploadSection title={"course thumbnail"} progress={this.state.courseThumbnailProgress}
-                           displayables={this.state.courseThumbnail} setFiles={this.setFiles}/>
+                           displayables={this.state.courseThumbnail} setFiles={this.setFiles}
+                           emptyFiles={this.emptyFiles}/>
             <button
                 onClick={async (e) => {
                     e.preventDefault();
                     if (this.state.lectures.length === 0 || this.state.resources.length === 0 || this.state.courseThumbnail.length === 0) {
-                        alert("Please fill all the fields")
+                        alert("Please fill all the fields");
                     } else {
                         let ref = firestore.collection("courses").doc();
                         const courseId = ref.id;

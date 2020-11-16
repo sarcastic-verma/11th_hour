@@ -8,7 +8,7 @@ export default class UploadSection extends Component {
     }
 
     render() {
-        const {title, progress, displayables, setFiles} = this.props;
+        const {title, progress, emptyFiles, displayables, setFiles} = this.props;
         return <div>
             <h1>Upload {title}</h1>
             <div className="row">
@@ -19,7 +19,10 @@ export default class UploadSection extends Component {
             <div className="file-field input-field">
                 <div className="btn">
                     {title !== "course thumbnail" ?
-                        <input type="file" multiple onChange={e => onFileChange(e, title, setFiles)}/> :
+                        <input type="file" multiple onChange={e => onFileChange(e, title, setFiles)} onClick={() => {
+                            emptyFiles(title);
+                        }
+                        }/> :
                         <input type="file" onChange={e => onFileChange(e, title, setFiles)}/>}
                 </div>
             </div>
