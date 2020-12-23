@@ -17,6 +17,11 @@ export const selectInstructorId = createSelector(
     user => user.id,
 );
 
+export const selectUploadedCoursesId = createSelector(
+    [selectCurrentUser],
+    user => user.myUploadedCourses,
+);
+
 export const selectCollegeId = createSelector(
     [selectCurrentUser],
     user => user.collegeId,

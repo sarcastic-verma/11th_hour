@@ -8,14 +8,13 @@ import {selectCurrentUser} from '../../redux/user/user-selectors';
 
 import {ReactComponent as Logo} from '../../assets/home-button.svg';
 import './header.styles.scss';
-import Searchbar from '../search-bar/search-bar.component';
 
 const Header = ({currentUser}) => (
     <div className='header'>
         <Link className='logo-container' to='/'>
             <Logo className='logo'/>
         </Link>
-        <Searchbar/>
+        {/*<Searchbar/>*/}
         <div className='options'>
             {currentUser ? (
                 <Link className='option' to='/upload'>
@@ -23,7 +22,6 @@ const Header = ({currentUser}) => (
                 </Link>
             ) : (
                 <div/>
-
             )}
             {currentUser ? (
                 <div className='option' onClick={() => auth.signOut()}>

@@ -1,6 +1,6 @@
 import CourseTypes from "./course-types";
 
-export const setSomeCourseShit = course => ({
-    type: CourseTypes.SET_SOME_COURSE_SHIT,
+export const setAllCourses = course => ({
+    type: CourseTypes.SET_ALL_COURSES,
     payload: course
 })

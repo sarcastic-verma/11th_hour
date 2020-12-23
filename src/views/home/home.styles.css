@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap");
+.homepage {
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+
+.studyillus {
+  position: relative;
+  height: 400px;
+  width: 400px;
+  border-radius: 12rem;
+  left: 300px;
+  top: -300px;
+  bottom: 150px;
+  z-index: 1; }
+
+.maintext {
+  position: relative;
+  left: -425px;
+  top: 150px;
+  font-family: 'Roboto-Slab', sans-serif; }
+
+.home-design {
+  position: relative;
+  top: -1075px;
+  left: 400px; }
+
+.title {
+  color: black;
+  position: relative;
+  font-family: sans-serif;
+  left: -450px;
+  top: 50px;
+  height: 5px;
+  font-size: 4rem; }
+
+/*# sourceMappingURL=home.styles.css.map */

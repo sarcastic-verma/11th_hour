@@ -145,22 +145,21 @@ export const addCourseToFirestore = async (title, price, description, subject, c
 export const getCourses = async () => {
     let courses = [];
     let snapshot =
-        await firestore.collection("courses").getDocuments();
-    snapshot.documents.forEach((course) => {
-        courses.push(Course.fromDocumentSnapshot(course));
+        await firestore.collection("courses").get();
+    snapshot.docs.forEach(course => {
+        courses.push({['id']: course.id, ...course.data()})
     });
     return courses;
 };
 
 export const getCourseById = (courses, courseId) => {
-    return courses.where((course) => course.id === courseId)[0];
+    return courses.find((course) => course.id === courseId);
 };
 
 //this is used when a user buys a course
 export const addUserToCourses = (userId, courseIds, courses) => {
     for (let i = 0; i < courseIds.length; i++)
         getCourseById(courses, courseIds[i]).enrolledUsers.add(userId);
-
     return courseIds;
 };
 
@@ -207,12 +206,13 @@ export const getTrendingCourses = (courses) => {
     return courses;
 };
 
-export const getCoursesByIds = (courseIds) => {
+export const getCoursesByIds = (coursesInState, courseIds) => {
     let courses = [];
+    console.log(coursesInState);
     try {
-        for (let i = 0; i < courses.length; i++) {
-            let cid = getCourseById(courseIds[i].trim());
-            courses.push(cid);
+        for (let i = 0; i < courseIds.length; i++) {
+            let course = getCourseById(coursesInState, courseIds[i].trim());
+            courses.push(course);
         }
     } catch (err) {
         console.log(err);

@@ -1,2 +1,2 @@
-const CourseTypes = {SET_SOME_COURSE_SHIT: "SET_SOME_COURSE_SHIT"}
+const CourseTypes = {SET_ALL_COURSES: "SET_ALL_COURSES"}
 export default CourseTypes;

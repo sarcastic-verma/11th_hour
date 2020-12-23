@@ -18,12 +18,15 @@ import {setCurrentUser} from "../redux/user/user-actions";
 import {selectCurrentUser} from "../redux/user/user-selectors";
 import Page404 from "../views/page-404/page-404.views";
 import ProfilePage from "../views/profile-page/profile-page.view";
+import MyUploads from "../views/my-uploads/my-uploads.view";
+import {setAllCourses} from "../redux/course/course-actions";
+import {getCourses} from "../controllers/course-controller";
 
 class App extends React.Component {
     unsubscribeFromAuth = null;
 
-    componentDidMount() {
-        const {setCurrentUser} = this.props;
+    async componentDidMount() {
+        const {setCurrentUser,setAllCourses} = this.props;
 
         this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
             if (userAuth) {
@@ -39,6 +42,9 @@ class App extends React.Component {
 
             setCurrentUser(userAuth);
         });
+
+        const courses = await getCourses();
+        setAllCourses(courses);
     }
 
     componentWillUnmount() {
@@ -53,6 +59,13 @@ class App extends React.Component {
                     <Route exact path="/upload" render={() =>
                         this.props.currentUser ? (
                             <UploadPage/>
+                        ) : (
+                            <AuthPage/>
+                        )
+                    }/>
+                    <Route exact path="/my-uploads" render={() =>
+                        this.props.currentUser ? (
+                            <MyUploads/>
                         ) : (
                             <AuthPage/>
                         )
@@ -93,6 +106,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => ({
     setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+    setAllCourses: (courses) => dispatch(setAllCourses(courses))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

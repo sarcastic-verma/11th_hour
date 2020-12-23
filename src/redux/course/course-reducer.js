@@ -1,13 +1,13 @@
 const initialState = {
-    currentCourse: null
+    courses: []
 }
 
 const courseReducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'SET_SOME_COURSE_SHIT':
+        case 'SET_ALL_COURSES':
             return {
                 ...state,
-                currentCourse: action.payload
+                courses: action.payload
             }
         default:
             return state;

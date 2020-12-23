@@ -16,7 +16,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     user: userReducer,
-    course: courseReducer,
+    courses: courseReducer,
     college: collegeReducer,
     transaction: transactionReducer,
     cart: cartReducer,

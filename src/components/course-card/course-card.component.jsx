@@ -1,9 +1,10 @@
 import React from "react";
 
-function CourseCard(props) {
+function CourseCard({course}) {
+    console.log(course);
     return (
         <div className="Card">
-            <h1>{props.title}</h1>
+            <h1>{course.title}</h1>
         </div>
     );
 }
